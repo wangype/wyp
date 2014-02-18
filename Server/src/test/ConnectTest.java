@@ -31,7 +31,6 @@ public class ConnectTest {
 	private static Connection getConnection(){
 		
 		String url = "jdbc:mysql://10.11.80.59:3306/yq";
-		String ip="10.11.80.59";
 		String username = "root";
 		String password = "root";
 		try {
