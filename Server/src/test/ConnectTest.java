@@ -12,6 +12,7 @@ public class ConnectTest {
 	private static Connection connection = null;
 	
 	public static void main(String[] args) {
+		
 		Connection conn;
 		conn = getConnection();
 		try {
