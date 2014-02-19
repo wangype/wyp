@@ -23,7 +23,7 @@ public class UserDaoImpl implements IUserDao {
 		DBUtil dbutil = DBUtil.getDBUtil();
 		int id;
 		Connection con = dbutil.getConnection();
-		String sql1 = "insert into yquser(name,password,time,sex,age,lev) values(?,?,?,?,?,?)";
+		String sql1 = "insert into yquser(name,password,time,sex,age,lev,uid) values(?,?,?,?,?,?,?)";
 		String sql2 = "select uid from yquser";
 		String sql3 = "update yquser set email = ? where uid = ?";
 		String md5pd = MD5CryptUtil.getMd5CryptUtil().convertToMD5(u.getPassword()); 
@@ -31,10 +31,11 @@ public class UserDaoImpl implements IUserDao {
 			PreparedStatement ps = con.prepareStatement(sql1);
 			ps.setString(1, u.getName());
 			ps.setString(2, md5pd);
-			ps.setString(3, MyDate.getDateCN());
+			ps.setString(3, MyDate.getDateEN());
 			ps.setString(4, u.getSex());
 			ps.setInt(5, u.getAge());
 			ps.setInt(6, u.getLev());
+			ps.setInt(7, u.getUid());
 			int res = ps.executeUpdate();
 			if (res > 0) {
 				PreparedStatement ps2 = con.prepareStatement(sql2);
@@ -101,20 +102,21 @@ public class UserDaoImpl implements IUserDao {
 		PreparedStatement ps;
 		try {
 			ps = con.prepareStatement(sql);
-			ps.setInt(1, id);
+//			ps.setInt(1, id);
+			ps.setString(1, "f_"+id);
 			ResultSet rs = ps.executeQuery();
 			if (rs.first()) {
 				do {
 					User friend = new User();
-					friend.setUid(rs.getInt("yq"));
-					friend.setName(rs.getString("name"));
-					friend.setIsonline(rs.getInt("isonline"));
-					friend.setImg(rs.getString("img"));
-					friend.setGroup(rs.getString("group"));
-					friend.setEmail(rs.getString("email"));
-					friend.setAge(rs.getInt("age"));
-					friend.setSex(rs.getString("sex"));
-					friend.setLev(rs.getInt("lev"));
+					friend.setUid(rs.getInt("f_yq"));
+					friend.setName(rs.getString("f_name"));
+					friend.setIsonline(rs.getInt("f_isonline"));
+					friend.setImg(rs.getString("f_img"));
+					friend.setGroup(rs.getString("f_group"));
+					friend.setEmail(rs.getString("f_email"));
+					friend.setAge(rs.getInt("f_age"));
+					friend.setSex(rs.getString("f_sex"));
+					friend.setLev(rs.getInt("f_lev"));
 					list.add(friend);
 				} while (rs.next());
 			}
@@ -191,7 +193,8 @@ public class UserDaoImpl implements IUserDao {
 			String sql = "update ? set isonline=0 where yq=?";
 			PreparedStatement ps = con.prepareStatement(sql);
 			for (int offId : getAllId()) {
-				ps.setInt(1, offId);
+//				ps.setInt(1, offId);
+				ps.setString(1, "f_"+offId);
 				ps.setInt(2, id);
 				ps.executeUpdate();
 			}
@@ -234,7 +237,8 @@ public class UserDaoImpl implements IUserDao {
 			String sql = "update ? set isonline=1 where yq=?";
 			PreparedStatement ps = con.prepareStatement(sql);
 			for (int OnId : getAllId()) {
-				ps.setInt(1, OnId);
+//				ps.setInt(1, OnId);
+				ps.setString(1, "f_"+OnId);
 				ps.setInt(2, id);
 				ps.executeUpdate();
 			}
@@ -276,13 +280,17 @@ public class UserDaoImpl implements IUserDao {
 		DBUtil dbutil = DBUtil.getDBUtil();
 		Connection con = dbutil.getConnection();
 		try {
-			String sql = "create table " + id
-					+ " (id int auto_increment not null primary key,"
-					+ "name varchar(20) not null,"
-					+ "isonline int(11) not null default 0,"
-					+ "group int(11) not null default 0,"
-					+ "yq int(16) not null default 0,"
-					+ "img int(11) not null default 0)";
+			String sql= "create table f_" + id
+					+ " (f_id int auto_increment not null primary key,"
+					+ "f_name varchar(20) not null,"
+					+ "f_email varchar(20) not null,"
+					+ "f_sex varchar(4) not null,"
+					+ "f_age int(11) not null,"
+					+ "f_lev int(11) not null,"
+					+ "f_isOnline int(11) not null default 0,"
+					+ "f_group int(11) not null default 0,"
+					+ "f_yq int(11) not null default 0,"
+					+ "f_img int(11) not null default 0)";
 			PreparedStatement ps = con.prepareStatement(sql);
 			int res = ps.executeUpdate();
 			System.out.println(res);
